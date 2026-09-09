@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import { NavigationPage } from './navigationPage';
 import { LoginPage } from './loginPage';
-
+import { PatientsPage } from './patientsPage';
 
 export class PageManager {
     private readonly navigationPage: NavigationPage;
@@ -22,5 +22,7 @@ export class PageManager {
         return this.loginPage;
     }
 
-    
+     onPatientsPage() {
+        return this.patientsPage;
+    }
 }
