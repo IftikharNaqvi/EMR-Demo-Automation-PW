@@ -1,0 +1,19 @@
+{
+  "name": "sectionSix",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "login-chrome": "npx playwright test useMyPageObjects.spec.ts --project=chromium",
+    "login-firefox": "npx playwright test useMyPageObjects.spec.ts --project=firefox",
+    "login-all": "npm run login-chrome && npm run login-firefox"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^24.10.1"
+  }
+}
