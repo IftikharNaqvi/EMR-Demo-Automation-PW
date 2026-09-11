@@ -36,7 +36,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    video: 'on',
+    // Keep videos only when a test fails; successful test videos are discarded.
+    video: 'retain-on-failure',
 
     // Default timeout for actions like click(), fill(), waitFor()
       actionTimeout: 60000, // 60 seconds
