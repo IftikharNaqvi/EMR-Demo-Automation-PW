@@ -18,8 +18,8 @@ export class PatientsPage extends HelperBase {
     private searchInput = this.page.locator('[data-testid="patient-search"]');
     private addButton = this.page.locator('[data-testid="add-patient"]');
     private patientsHeading = this.page.locator('h1:has-text("Patients")');
-    // NOTE: not defined in the original file - confirm this selector against the real table markup
-    private patientRows = this.page.locator('[data-testid="patient-row"]');
+    
+            private patientRows = this.page.locator('table tbody tr');
     private viewButtons = this.page.locator('[data-testid="action-view"]');
     private editButtons = this.page.locator('[data-testid="action-edit"]');
     private createCaseButtons = this.page.locator('[data-testid="action-create-case"]');

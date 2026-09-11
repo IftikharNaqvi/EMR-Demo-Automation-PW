@@ -6,6 +6,7 @@
 
 import { expect, test } from '@playwright/test';
 import { PageManager } from '../page-objects/pageManager';
+import { PatientFormPage } from '../page-objects/patientFormPage';
 
 // ============================================================
 // SETUP - Run before each test
@@ -150,7 +151,7 @@ test.describe('Patient Page - Core Functionality Tests', () => {
     });
 
     // ============================================================
-    // TEST 9 - Click Edit button for first patient
+    // TEST 9 - Click Edit button for first patient to check action of opening edit form
     // ============================================================
     test('should click Edit button for first patient', async ({ page }) => {
         // Create a new instance of PageManager
@@ -175,7 +176,7 @@ test.describe('Patient Page - Core Functionality Tests', () => {
     });
 
     // ============================================================
-    // TEST 10 - Click Create Case button for first patient
+    // TEST 10 - Click Create Case button for first patient to check action of opening case creation modal
     // ============================================================
     test('should click Create Case button for first patient', async ({ page }) => {
         // Create a new instance of PageManager
@@ -200,7 +201,7 @@ test.describe('Patient Page - Core Functionality Tests', () => {
     });
 
     // ============================================================
-    // TEST 12 - Click Add button to create new patient
+    // TEST 12 - Click Add button to check action of opening new patient form
     // ============================================================
     test('should click Add button to open new patient form', async ({ page }) => {
         // Create a new instance of PageManager
@@ -325,6 +326,84 @@ test.describe('Patient Page - Core Functionality Tests', () => {
         await expect(searchValue).toBe('Bilal');
     });
 
+    // ============================================================
+    // TEST 19 - Create patient, fill form, save, and verify creation
+    // ============================================================
+    test('should create a patient by filling the form and saving it', async ({ page }) => {
+        // Create page-object instances for the patients page and form dialog
+        const pm = new PageManager(page);
+        const patientFormPage = new PatientFormPage(page);
+
+        // Login with valid credentials
+        await pm.onLoginPage().loginWithValidCredentials(
+            'admin',
+            'meridian123'
+        );
+
+        // Navigate to the Patients page and record the current patient count
+        await pm.navigateTo().patientsPage();
+        const patientCountBeforeCreate = await pm.onPatientsPage().getPatientRowCount();
+
+        // Open the new patient form
+        await pm.onPatientsPage().clickAddButton();
+        await expect(patientFormPage.isVisible()).resolves.toBe(true);
+
+        // Add the required telephone number
+        await patientFormPage.addTelephoneNumber('3001234567');
+
+        // Fill the identity details and add the identity record
+        await patientFormPage.clickIdentityTab();
+        await patientFormPage.addIdentityRecord('CNIC', '99001-1234567-1');
+        await expect(page.getByText('99001-1234567-1')).toBeVisible();
+
+        // Fill the required basic patient details after adding the identity
+        await patientFormPage.fillBasicInformation('Hamid Ali Abbasi', 29, 'Female');
+
+        // Save the patient and verify that the form closes
+        await patientFormPage.savePatient();
+        await expect(patientFormPage.isVisible()).resolves.toBe(false);
+
+        // Verify that a new patient row was added to the patient list
+        const patientCountAfterCreate = await pm.onPatientsPage().getPatientRowCount();
+        await expect(patientCountAfterCreate).toBeGreaterThan(patientCountBeforeCreate);
+    });
+
+    // ============================================================
+    // TEST 20 - Edit the first patient and verify the change
+    // ============================================================
+    test('should edit the first patient and verify the patient details changed', async ({ page }) => {
+        // Create page-object instances for the patients page and form dialog
+        const pm = new PageManager(page);
+        const patientFormPage = new PatientFormPage(page);
+
+        // Login with valid credentials
+        await pm.onLoginPage().loginWithValidCredentials(
+            'admin',
+            'meridian123'
+        );
+
+        // Navigate to the Patients page and record the current patient count
+        await pm.navigateTo().patientsPage();
+        const patientCountBeforeEdit = await pm.onPatientsPage().getPatientRowCount();
+
+        // Open the edit form for the first patient
+        await pm.onPatientsPage().clickEditButton(0);
+        await expect(patientFormPage.isVisible()).resolves.toBe(true);
+
+        // Change the patient's basic details and verify the changed value in the form
+        const updatedPatientName = 'Amina Raza Updated';
+        await patientFormPage.fillBasicInformation(updatedPatientName, 35, 'Female');
+        await expect(patientFormPage.isVisible()).resolves.toBe(true);
+
+        // Save the edit and verify that the form closes
+        await patientFormPage.savePatient();
+        await expect(patientFormPage.isVisible()).resolves.toBe(false);
+
+        // Verify that editing did not create or remove a patient row
+        const patientCountAfterEdit = await pm.onPatientsPage().getPatientRowCount();
+        await expect(patientCountAfterEdit).toBe(patientCountBeforeEdit);
+        await expect(page.getByText(updatedPatientName, { exact: true })).toBeVisible();
+    });
 
 });
 
