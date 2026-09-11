@@ -21,7 +21,12 @@ export class NavigationPage extends HelperBase {
     }
 
     async prescriptionsPage() {
-        await this.selectGoupMenuItem('Prescriptions');
+        const prescriptionMenuItem = this.page.getByRole('button', {
+            name: 'Prescription'
+        });
+
+        await expect(prescriptionMenuItem).toBeVisible();
+        await prescriptionMenuItem.click();
     }
 
     private async selectGoupMenuItem(menuItemTitle: string) {
